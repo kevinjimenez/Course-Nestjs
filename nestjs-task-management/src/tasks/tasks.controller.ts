@@ -8,7 +8,7 @@ import {
     Patch,
     Query,
     UsePipes,
-    ValidationPipe, ParseIntPipe, UseGuards,
+    ValidationPipe, ParseIntPipe, UseGuards, Logger,
 } from '@nestjs/common';
 import {TasksService} from './tasks.service';
 import {CreateTaskDto} from './dto/create-task.dto';
@@ -23,6 +23,8 @@ import {GetUser} from "../auth/get-user.decorator";
 @Controller('tasks')
 @UseGuards(AuthGuard())
 export class TasksController {
+    private looger = new Logger('TasksController');
+
     constructor(private tasksService: TasksService) {
     }
 
@@ -32,6 +34,7 @@ export class TasksController {
         @Query(ValidationPipe) filterDto: GetTasksFilterDto,
         @GetUser() user: UserEntity
     ) {
+        this.looger.verbose(`User "${user.username}" retrieving all task. Filter: ${JSON.stringify(filterDto)}`);
         return this.tasksService.getTasks(filterDto, user);
     }
 
@@ -78,3 +81,13 @@ export class TasksController {
                 user);
     }
 }
+
+// Logger
+/*
+Log -> proposito general
+warning -> issues
+error -> error
+debug -> inusual informacion
+verboose -> mas informacion
+
+ */
