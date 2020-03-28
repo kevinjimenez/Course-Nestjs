@@ -1,6 +1,7 @@
-import {Body, Controller, Post, UnauthorizedException, ValidationPipe} from '@nestjs/common';
+import {Body, Controller, Post, Req, UseGuards, ValidationPipe} from '@nestjs/common';
 import {AuthCredentialsDto} from "./dto/auth-credentials.dto";
 import {AuthService} from "./auth.service";
+import {AuthGuard} from "@nestjs/passport";
 
 @Controller('auth')
 export class AuthController {
@@ -17,13 +18,18 @@ export class AuthController {
     }
 
     @Post('/signIn')
-    async signIp(
+    signIp(
         @Body(ValidationPipe) authCredentialsDto: AuthCredentialsDto
     ) {
-        const username = await this.authService.signIn(authCredentialsDto);
-        if (!username) {
-            throw new UnauthorizedException('Ivanlid credencials')
-        }
+        return this.authService.signIn(authCredentialsDto);
+    }
+
+    // header
+    // Authorization -> Bearer (token)
+    @Post('/test')
+    @UseGuards(AuthGuard())
+    test(@Req() req) {
+        console.log(req)
     }
 
 }
