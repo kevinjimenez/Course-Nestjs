@@ -37,8 +37,10 @@ export class TasksController {
         return this.tasksService.getTaskById(id);
     }
 
+    /*
+    si no se manda el jwtoken no obtiene el usuario
+    * */
     @Post()
-    @UseGuards(AuthGuard())
     @UsePipes(ValidationPipe) // ValidationPipe -> toma los datos de http y los valida con el dto que se ta tipando (validacion por default)
     createTask(
         @Body() createTaskDto: CreateTaskDto,
