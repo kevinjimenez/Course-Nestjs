@@ -23,4 +23,7 @@ export class TaskEntity extends BaseEntity {
     )
     user: UserEntity;
 
+    @Column()
+    userId: number;
+
 }

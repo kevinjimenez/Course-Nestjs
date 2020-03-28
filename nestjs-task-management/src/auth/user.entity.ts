@@ -24,6 +24,7 @@ export class UserEntity extends BaseEntity {
     )
     task: TaskEntity[];
 
+
     async validatePassword(password: string): Promise<boolean> {
         const hash = await bcrypt.hash(password, this.salt);
         return hash === this.password;

@@ -16,8 +16,11 @@ export class TasksService {
 
     }
 
-    getTasks(filterDto: GetTasksFilterDto): Promise<TaskEntity[]> {
-        return this.taskRepository.getTasks(filterDto)
+    getTasks(
+        filterDto: GetTasksFilterDto,
+        user: UserEntity
+    ): Promise<TaskEntity[]> {
+        return this.taskRepository.getTasks(filterDto, user)
     }
 
     // getTasksWithFilters(filterTask: GetTasksFilterDto): Task[] {
@@ -43,8 +46,14 @@ export class TasksService {
     //   return this.tasks;
     // }
     //
-    async getTaskById(id: number): Promise<TaskEntity> {
-        const found = await this.taskRepository.findOne(id);
+    async getTaskById(
+        id: number,
+        user: UserEntity
+    ): Promise<TaskEntity> {
+        const found = await this.taskRepository
+            .findOne(
+                {where: {id, userId: user.id}}
+            );
 
         if (!found) {
             throw new NotFoundException(`Task with ID "${id}" not found`);
@@ -59,8 +68,12 @@ export class TasksService {
         return await this.taskRepository.createTask(createTaskDto, user);
     }
 
-    async updateTaskStatus(id: number, status: TaskStatusEnum): Promise<TaskEntity> {
-        const task = await this.getTaskById(id);
+    async updateTaskStatus(
+        id: number,
+        status: TaskStatusEnum,
+        user: UserEntity
+    ): Promise<TaskEntity> {
+        const task = await this.getTaskById(id, user);
         task.status = status;
         await task.save();
         return task;
@@ -72,9 +85,12 @@ export class TasksService {
     //   return task;
     // }
 
-    async deleteTask(id: number): Promise<void> {
+    async deleteTask(
+        id: number,
+        user: UserEntity
+    ): Promise<void> {
         // return this.taskRepository.deleteTask(id);
-        const result = await this.taskRepository.delete(id);
+        const result = await this.taskRepository.delete({id, userId: user.id});
         if (result.affected === 0) {
             throw new NotFoundException(`Task with ID "${id}" not found`);
         }
