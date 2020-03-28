@@ -4,6 +4,7 @@ import {CreateTaskDto} from "./dto/create-task.dto";
 import {TaskStatusEnum} from "./task-status.enum";
 import {NotFoundException} from "@nestjs/common";
 import {GetTasksFilterDto} from "./dto/get-tasks-filter.dto";
+import {UserEntity} from "../auth/user.entity";
 
 @EntityRepository(TaskEntity)
 export class TaskRepository extends Repository<TaskEntity> {
@@ -28,13 +29,19 @@ export class TaskRepository extends Repository<TaskEntity> {
         return tasks;
     }
 
-    async createTask(createTaskDto: CreateTaskDto): Promise<TaskEntity> {
+    async createTask(
+        createTaskDto: CreateTaskDto,
+        user: UserEntity): Promise<TaskEntity> {
         const {title, description} = createTaskDto;
         const task = new TaskEntity();
         task.title = title;
         task.description = description;
         task.status = TaskStatusEnum.OPEN;
+        task.user = user;
         await task.save();
+
+        delete task.user;
+        
         return task;
     }
 

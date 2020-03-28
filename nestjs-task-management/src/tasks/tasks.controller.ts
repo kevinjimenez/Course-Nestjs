@@ -17,6 +17,8 @@ import {TaskStatusValidationPipe} from './pipes/task-status-validation.pipe';
 import {TaskEntity} from "./task.entity";
 import {TaskStatusEnum} from "./task-status.enum";
 import {AuthGuard} from "@nestjs/passport";
+import {UserEntity} from "../auth/user.entity";
+import {GetUser} from "../auth/get-user.decorator";
 
 @Controller('tasks')
 export class TasksController {
@@ -36,9 +38,13 @@ export class TasksController {
     }
 
     @Post()
+    @UseGuards(AuthGuard())
     @UsePipes(ValidationPipe) // ValidationPipe -> toma los datos de http y los valida con el dto que se ta tipando (validacion por default)
-    createTask(@Body() createTaskDto: CreateTaskDto): Promise<TaskEntity> {
-        return this.tasksService.createTask(createTaskDto);
+    createTask(
+        @Body() createTaskDto: CreateTaskDto,
+        @GetUser() user: UserEntity
+    ): Promise<TaskEntity> {
+        return this.tasksService.createTask(createTaskDto, user);
     }
 
     //
